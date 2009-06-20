@@ -1,0 +1,7 @@
+= js_juice
+
+Description goes here.
+
+== Copyright
+
+Copyright (c) 2009 Mike Frawley. See LICENSE for details.
