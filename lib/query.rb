@@ -15,6 +15,33 @@ end
 
 
 module JsJuice
+  
+  class JsLibrary < OpenStruct
+
+     # TODO justify text!
+     def formated
+       "#{name}     |  #{versions.reverse.join(", ")}"
+     end
+
+     # TODO
+     def download(opts={})   
+       require 'download'
+       opts[:version] ||= latest_version
+       # ...
+     end
+
+     # TODO
+     def url_for(opts={})
+       version = opts[:version] || latest_version
+       "http://#{version}"
+     end
+
+     def latest
+       versions.last
+     end
+   end
+   
+   
   module Query                                             
     
     class Google
@@ -31,7 +58,11 @@ module JsJuice
       def libs
         @libs ||= lib_info_elements.map {|el| JsLibrary.new(extract_lib_info(el)) }
       end                                
-
+      
+      def names
+        libs.map {|l| l.name }
+      end
+      
       private                                                            
       def lib_info_elements
         doc / 'dl.al-liblist'
@@ -52,9 +83,10 @@ module JsJuice
       # in to an array
       def extract_lib_info(lib_html)
         transform = Hash.new(lambda {|val| val})
-        transform.merge! \
-          "versions" => lambda {|val| val.split(', ')}
-
+        transform.merge!({
+          "versions" => lambda {|val| val.split(', ').reverse }
+        })
+        
         (lib_html / 'dd.al-libstate').inject({}) do |accum, prop|
           key, val = prop.inner_text.split(":", 2).map {|s| s.strip}
           accum[key] = transform[key].call(val)
