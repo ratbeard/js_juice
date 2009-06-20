@@ -5,14 +5,10 @@ module JsJuice
 
 
   describe "Querying Google" do  
-    
     before :all do
       # @google ||= Query::Google.new
       @response = Query::Google.new
-    end
-    
-    it "returns expected libraries" do 
-      expected_libs = %w{
+      @expected_libs = %w{
         swfobject
         jquery
         jqueryui
@@ -23,20 +19,16 @@ module JsJuice
         yui
         ext-core
       }
-      unexpected_libs = %w{
-        atlas
-        core-dojo-tools-ui
-      }
-         
-      # then
-      expected_libs.each do |name| 
+    end
+    
+    it "returns expected libraries" do    
+      @expected_libs.each do |name| 
         @response.names.should include(name)        
       end
       
-      unexpected_libs.each do |name| 
+      ['atlas', 'ui'].each do |name| 
         @response.names.should_not include(name)        
       end  
-      
     end
   end
 
