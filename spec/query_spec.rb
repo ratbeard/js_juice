@@ -40,14 +40,26 @@ module JsJuice
       @jquery = @google['jquery']
     end                          
     
+    it "tells if a library offers an uncompressed version" do
+      @google['jquery'].should have_uncompressed
+      @google['prototype'].should_not have_uncompressed
+      
+      
+    end
     describe "url" do
       it "is by default the latest compressed library version" do
         # given
-        version = @jquery.latest_version
+        version = @jquery.latest
         expected_url = "http://ajax.googleapis.com/ajax/libs/jquery/#{version}/jquery.min.js"
         # then
         @jquery.url.should == expected_url
-          
+      end                                 
+      
+      it "can be overriden what version to use" do
+        # given
+        expected_url = "http://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"
+        # then
+        @jquery.url(:version => '1.3.0').should == expected_url
       end
     end
   end

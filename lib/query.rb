@@ -34,12 +34,41 @@ module JsJuice
 
        # TODO
        def url(opts={})
-         path 
+         opts.empty?? path :  construct_url(opts)
        end
 
-       def latest_version
+       def has_uncompressed?
+         !! respond_to?("path(u)")
+       end
+
+       def latest
          versions.first
        end
+                               
+       private
+       def construct_url(opts)
+         defaults = { :version => latest, :uncompressed => false}
+         defaults.merge!(opts)
+         check_version_available(opts[:version])
+         check_uncompressed_available if opts[:uncompressed]
+         
+       end 
+       
+       def check_version_available(version)
+         if not versions.include? version
+           raise "#{name} doesn't have version: #{version}.  available versions: #{versions}"                             
+         end
+         true
+       end
+       
+       def check_uncompressed_available
+         if not uncompressed?
+           raise "#{name} doesn't support uncompressed"                             
+         end
+         true
+       end
+       
+       
      end
                                        
     # Query Google about the libraries it provides w/ this class
