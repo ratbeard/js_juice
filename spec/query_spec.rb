@@ -3,10 +3,8 @@ require "query"
 
 module JsJuice
 
-
   describe "Querying Google" do  
     before :all do
-      # @google ||= Query::Google.new
       @response = Query::Google.new
       @expected_libs = %w{
         swfobject
@@ -37,10 +35,8 @@ module JsJuice
     end                                        
     
     it "returns expected versions for jquery" do
-      # given
       versions = @response['jquery'].versions
-      # then
-      versions.should have(5).versions
+      versions.should have_at_least(5).versions
     end
     
   end

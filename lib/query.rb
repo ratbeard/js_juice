@@ -47,7 +47,7 @@ module JsJuice
                                                
     
     class Google
-      def url 
+      def info_url 
         "http://code.google.com/apis/ajaxlibs/documentation/"
       end
       
@@ -56,7 +56,7 @@ module JsJuice
           raise("Couldn't find library #{lib_name}")
       end
       
-      # Get list of Libraries.
+      # Get list of Libraries.  memoized
       def libs
         @libs ||=
           library_info_elements.map do |el| 
@@ -71,7 +71,7 @@ module JsJuice
       
       # html page.  memoized
       def fetch
-        @response ||= Net::HTTP.get_response(URI.parse(url)).body
+        @response ||= Net::HTTP.get_response(URI.parse(info_url)).body
       end
       
       
