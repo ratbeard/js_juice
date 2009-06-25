@@ -28,7 +28,7 @@ module JsJuice
        # TODO
        def download(opts={})   
          require 'download'
-         opts[:version] ||= latest_version
+         url(opts)
          # ...
        end
 
@@ -36,11 +36,12 @@ module JsJuice
        def url(opts={})
          opts.empty?? path :  construct_url(opts)
        end
-
+                  
+       # not all libraries have uncompressed versions
        def has_uncompressed?
          !! respond_to?("path(u)")
        end
-
+                                                     
        def latest
          versions.first
        end
