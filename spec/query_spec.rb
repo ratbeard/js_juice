@@ -5,7 +5,7 @@ module JsJuice
 
   describe "Querying Google" do  
     before :all do
-      @response = Query::Google.new
+      @google = Query::Google.new
       @expected_libs = %w{
         swfobject
         jquery
@@ -20,26 +20,38 @@ module JsJuice
     end
     
     it "returns expected libraries" do    
-      @expected_libs.each do |name| 
-        @response.names.should include(name)        
-      end
-
-      ['atlas', 'ui'].each do |name| 
-        @response.names.should_not include(name)        
-      end  
+      @google.names.sort.should == @expected_libs.sort
     end  
                                       
     it "allows accessing libraries by name with []'s" do
-      mootools = @response.libs.find {|lib| lib.name == 'mootools'}
-      @response['mootools'].should == mootools
+      mootools = @google.libs.find {|lib| lib.name == 'mootools'}
+      @google['mootools'].should == mootools
     end                                        
     
     it "returns expected versions for jquery" do
-      versions = @response['jquery'].versions
+      versions = @google['jquery'].versions
       versions.should have_at_least(5).versions
-    end
+    end    
+  end  
+  
+  describe "library result object" do
+    before :each do
+      @google = Query::Google.new
+      @jquery = @google['jquery']
+    end                          
     
+    describe "url" do
+      it "is by default the latest compressed library version" do
+        # given
+        version = @jquery.latest_version
+        expected_url = "http://ajax.googleapis.com/ajax/libs/jquery/#{version}/jquery.min.js"
+        # then
+        @jquery.url.should == expected_url
+          
+      end
+    end
   end
+  
 
 
 end

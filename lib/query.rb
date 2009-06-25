@@ -16,11 +16,10 @@ end
 
 module JsJuice
   
-  module Query
-                
+  module Query  
     
+    # The result from a Library Query:
     class Result < OpenStruct
-
        # TODO justify text!
        def formated
          "#{name}     |  #{versions.reverse.join(", ")}"
@@ -34,26 +33,24 @@ module JsJuice
        end
 
        # TODO
-       def url_for(opts={})
-         version = opts[:version] || latest_version
-         "http://#{version}"
+       def url(opts={})
+         path 
        end
 
-       def latest
-         versions.last
+       def latest_version
+         versions.first
        end
      end
-     
-                                               
-    
+                                       
+    # Query Google about the libraries it provides w/ this class
     class Google
       def info_url 
         "http://code.google.com/apis/ajaxlibs/documentation/"
       end
       
+      # Get library info by name
       def [](lib_name)
-        libs.find {|l| l.name == lib_name} || 
-          raise("Couldn't find library #{lib_name}")
+        libs.find {|l| l.name == lib_name} || raise("Couldn't find library #{lib_name}")
       end
       
       # Get list of Libraries.  memoized
@@ -73,7 +70,6 @@ module JsJuice
       def fetch
         @response ||= Net::HTTP.get_response(URI.parse(info_url)).body
       end
-      
       
       private                                                            
       # hpricot doc of html body.  memoized
