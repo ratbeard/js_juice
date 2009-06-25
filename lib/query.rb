@@ -51,24 +51,20 @@ module JsJuice
          defaults.merge!(opts)
          check_version_available(opts[:version])
          check_uncompressed_available if opts[:uncompressed]
-         
+         #
+         url = opts[:uncompressed] ? send("path(u)") : path  
+         url[latest] = opts[:version]
+         url
        end 
        
        def check_version_available(version)
-         if not versions.include? version
-           raise "#{name} doesn't have version: #{version}.  available versions: #{versions}"                             
-         end
-         true
+         raise "'#{name}' doesn't have version: '#{version}'.  
+               Available versions: #{versions}" unless versions.include?(version)
        end
        
-       def check_uncompressed_available
-         if not uncompressed?
-           raise "#{name} doesn't support uncompressed"                             
-         end
-         true
+       def check_uncompressed_available  
+         raise "#{name} doesn't support uncompressed" unless uncompressed?
        end
-       
-       
      end
                                        
     # Query Google about the libraries it provides w/ this class
