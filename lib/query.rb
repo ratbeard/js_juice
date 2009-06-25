@@ -16,61 +16,74 @@ end
 
 module JsJuice
   
-  class JsLibrary < OpenStruct
+  module Query
+                
+    
+    class Result < OpenStruct
 
-     # TODO justify text!
-     def formated
-       "#{name}     |  #{versions.reverse.join(", ")}"
-     end
+       # TODO justify text!
+       def formated
+         "#{name}     |  #{versions.reverse.join(", ")}"
+       end
 
-     # TODO
-     def download(opts={})   
-       require 'download'
-       opts[:version] ||= latest_version
-       # ...
-     end
+       # TODO
+       def download(opts={})   
+         require 'download'
+         opts[:version] ||= latest_version
+         # ...
+       end
 
-     # TODO
-     def url_for(opts={})
-       version = opts[:version] || latest_version
-       "http://#{version}"
-     end
+       # TODO
+       def url_for(opts={})
+         version = opts[:version] || latest_version
+         "http://#{version}"
+       end
 
-     def latest
-       versions.last
+       def latest
+         versions.last
+       end
      end
-   end
-   
-   
-  module Query                                             
+     
+                                               
     
     class Google
       def url 
         "http://code.google.com/apis/ajaxlibs/documentation/"
       end
-
-      # get html body.  memoized
-      def fetch
-        @response ||= Net::HTTP.get_response(URI.parse(url)).body
-      end
-
-      # Get list of JsLibraries. memoized
-      def libs
-        @libs ||= lib_info_elements.map {|el| JsLibrary.new(extract_lib_info(el)) }
-      end                                
       
+      def [](lib_name)
+        libs.find {|l| l.name == lib_name} || 
+          raise("Couldn't find library #{lib_name}")
+      end
+      
+      # Get list of Libraries.
+      def libs
+        @libs ||=
+          library_info_elements.map do |el| 
+            Result.new(extract_lib_info(el))                
+          end
+      end                                
+
+      # just the library names
       def names
         libs.map {|l| l.name }
       end
       
-      private                                                            
-      def lib_info_elements
-        doc / 'dl.al-liblist'
+      # html page.  memoized
+      def fetch
+        @response ||= Net::HTTP.get_response(URI.parse(url)).body
       end
       
+      
+      private                                                            
       # hpricot doc of html body.  memoized
       def doc
         @doc ||= Hpricot(fetch)
+      end
+      
+      # html elements with library info
+      def library_info_elements
+        doc / 'dl.al-liblist'
       end
 
       # convert an [] of elems to a hash of props
