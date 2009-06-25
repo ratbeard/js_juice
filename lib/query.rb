@@ -46,16 +46,27 @@ module JsJuice
        end
                                
        private
+       # Build a url given the options.
+       # Can override the version and whether to use uncompressed
+       # defaults to version => latest and uncompresssed => false
+       # 
+       # Starts with the url based on compression on/off,
+       # then just replaces the latest version in that string w/ the
+       # given version
        def construct_url(opts)
-         defaults = { :version => latest, :uncompressed => false}
-         defaults.merge!(opts)
-         check_version_available(opts[:version])
-         check_uncompressed_available if opts[:uncompressed]
-         #
+         opts = provide_defaults_and_check(opts)
          url = opts[:uncompressed] ? send("path(u)") : path  
          url[latest] = opts[:version]
          url
-       end 
+       end  
+                                 
+       def provide_defaults_and_check(opts)
+         defaults = { :version => latest, :uncompressed => false}
+         opts = defaults.merge(opts)
+         check_version_available(opts[:version])
+         check_uncompressed_available if opts[:uncompressed]
+         opts
+       end
        
        def check_version_available(version)
          raise "'#{name}' doesn't have version: '#{version}'.  
@@ -66,6 +77,7 @@ module JsJuice
          raise "#{name} doesn't support uncompressed" unless uncompressed?
        end
      end
+                                      
                                        
     # Query Google about the libraries it provides w/ this class
     class Google
